@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "331553241383",
+    "project_id": "college-lost-found-9a81a",
+    "storage_bucket": "college-lost-found-9a81a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:331553241383:android:aa12e9afadec4c1b3e1102",
+        "android_client_info": {
+          "package_name": "com.college.college_lost_found"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAiINyoZs7hpKxGQ_CAYRZLXz2_BRgqzBM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
