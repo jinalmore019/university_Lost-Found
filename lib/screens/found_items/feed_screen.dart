@@ -7,29 +7,48 @@ import '../../providers/item_provider.dart';
 import '../../providers/auth_provider.dart';
 import 'claim_item_screen.dart';
 
-class FeedScreen extends StatelessWidget {
+class FeedScreen extends StatefulWidget {
   const FeedScreen({super.key});
+
+  @override
+  State<FeedScreen> createState() => _FeedScreenState();
+}
+
+class _FeedScreenState extends State<FeedScreen> {
 
   void _confirmDelete(BuildContext context, bool isLostItem, String itemId) async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Delete Item'),
         content: const Text('Are you sure you want to delete this post?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Delete')),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
         ],
       ),
     );
 
+    if (!mounted) return;
+
     if (confirm == true) {
       if (isLostItem) {
-        Provider.of<ItemProvider>(context, listen: false).deleteLostItem(itemId);
+        await Provider.of<ItemProvider>(context, listen: false).deleteLostItem(itemId);
       } else {
-        Provider.of<ItemProvider>(context, listen: false).deleteFoundItem(itemId);
+        await Provider.of<ItemProvider>(context, listen: false).deleteFoundItem(itemId);
       }
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Item deleted')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Item deleted successfully')),
+        );
+      }
     }
   }
 
