@@ -4,10 +4,34 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../providers/item_provider.dart';
+import '../../providers/auth_provider.dart';
 import 'claim_item_screen.dart';
 
 class FeedScreen extends StatelessWidget {
   const FeedScreen({super.key});
+
+  void _confirmDelete(BuildContext context, bool isLostItem, String itemId) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Item'),
+        content: const Text('Are you sure you want to delete this post?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Delete')),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      if (isLostItem) {
+        Provider.of<ItemProvider>(context, listen: false).deleteLostItem(itemId);
+      } else {
+        Provider.of<ItemProvider>(context, listen: false).deleteFoundItem(itemId);
+      }
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Item deleted')));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +62,7 @@ class FeedScreen extends StatelessWidget {
 
   Widget _buildLostItems(BuildContext context) {
     final items = Provider.of<ItemProvider>(context).lostItems;
+    final currentUser = Provider.of<AuthProvider>(context, listen: false).currentUser;
     if (items.isEmpty) {
       return const Center(child: Text("No lost items reported."));
     }
@@ -61,11 +86,21 @@ class FeedScreen extends StatelessWidget {
                       'Lost: ${item.itemName}',
                       style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.share, color: Colors.grey),
-                      onPressed: () {
-                        Share.share('I found a missing ${item.itemName} at ${item.location}. Check the DDU Lost & Found App!');
-                      },
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (currentUser != null && (currentUser.userId == item.ownerId || currentUser.role == 'admin'))
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () => _confirmDelete(context, true, item.itemId),
+                          ),
+                        IconButton(
+                          icon: const Icon(Icons.share, color: Colors.grey),
+                          onPressed: () {
+                            Share.share('I found a missing ${item.itemName} at ${item.location}. Check the DDU Lost & Found App!');
+                          },
+                        ),
+                      ],
                     )
                   ],
                 ),
@@ -118,6 +153,7 @@ class FeedScreen extends StatelessWidget {
 
   Widget _buildFoundItems(BuildContext context) {
     final items = Provider.of<ItemProvider>(context).foundItems;
+    final currentUser = Provider.of<AuthProvider>(context, listen: false).currentUser;
     if (items.isEmpty) {
       return const Center(child: Text("No found items reported."));
     }
@@ -141,11 +177,21 @@ class FeedScreen extends StatelessWidget {
                       'Found: ${item.category}',
                       style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.share, color: Colors.grey),
-                      onPressed: () {
-                        Share.share('A ${item.category} was found at ${item.location}. Claim it on the DDU Lost & Found App!');
-                      },
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (currentUser != null && (currentUser.userId == item.finderId || currentUser.role == 'admin'))
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () => _confirmDelete(context, false, item.itemId),
+                          ),
+                        IconButton(
+                          icon: const Icon(Icons.share, color: Colors.grey),
+                          onPressed: () {
+                            Share.share('A ${item.category} was found at ${item.location}. Claim it on the DDU Lost & Found App!');
+                          },
+                        ),
+                      ],
                     )
                   ],
                 ),

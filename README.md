@@ -1,130 +1,160 @@
 # 🎓 University Lost & Found App
 
-![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)
-![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)
-![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
-![Provider](https://img.shields.io/badge/Provider-State_Management-blueviolet?style=for-the-badge)
-
-Welcome to the **University Lost & Found App**, a comprehensive, real-time Flutter application engineered specifically for modern educational campuses. This platform digitizes and optimizes the traditional lost-and-found process, replacing outdated paper ledgers with a fast, secure, and user-friendly digital ecosystem. 
-
-Whether a student loses an expensive smartwatch on the grounds or a staff member finds a misplaced ID card in the library, this application bridges the communication gap instantly.
+A Flutter-based mobile application for college students and staff to report, find, and claim lost items within the university campus.
 
 ---
 
-## 🌟 Comprehensive Feature Set
+## 📱 Features
 
-### 👨‍🎓 For Students and Campus Staff (User Role)
-* **Secure Authentication:** Seamless Registration and Login flows utilizing Firebase Authentication. User data (Name, Email, Phone) is stored securely.
-* **Unified Public Feed:** A dynamically updating feed (using `FutureBuilder` and `Provider`) that showcases all items lost or found across the university. The feed is logically divided into two intuitive tabs: *Lost Items* and *Found Items*.
-* **Advanced Reporting Mechanics:**
-  * **Report Lost Items:** Users can submit detailed reports of what they lost, including the item's category, color, last known location, date, and a cloud-hosted image.
-  * **Report Found Items (Smart Deposit):** When a user finds an item, they have two distinct choices:
-    1. **Keep it with them:** The app enforces a "Verification Questions" system to ensure the item is returned only to its rightful owner.
-    2. **Deposit it:** If the user deposits the item at a designated campus location (e.g., Security Desk, HOD Office, Library), the app intelligently hides the verification questions and instead instructs the owner on where to physically collect their item.
-* **Smart Contacting System:** By leveraging the `url_launcher` package, users can connect with each other with a single tap. The app dynamically generates WhatsApp chat links or initiates direct Phone Calls based on the registered contact details.
-* **Share Functionality:** Users can share lost/found posts to other social platforms directly from the app using the `share_plus` package, increasing the chances of recovery.
-
-### 🛡️ For University Authorities (Admin Role)
-To accommodate university hierarchies without complex backend admin panels, the app features an **Automated Role Assignment System**. 
-* **Dynamic Authorization:** If a user registers with an email containing authorized keywords (`admin`, `security`, `hod`, `library`, `librarian`), the system automatically elevates their account privileges to **Admin**.
-* **Live Admin Dashboard:** Admins have exclusive access to a real-time statistical dashboard. They can monitor live metrics fetched directly from Firebase, such as:
-  * Total Registered Users on Campus
-  * Total Lost Items Reported
-  * Total Found Items Reported
-* **Centralized Digital Inventory:** Reduces administrative overhead for security guards and staff by keeping a digital trail of all deposited items.
+### 👤 Authentication
+- **Register** with name, email, phone number & password
+- **Login** with email and password
+- **Forgot Password** — sends a password reset email via Firebase Authentication
+- **Role-based access**: Admins (HOD, Security, Librarian, Admin) are identified by email keywords; everyone else is a regular user
 
 ---
 
-## 🛠️ Advanced Technology Stack & Architecture
-
-This project is built using industry-standard tools to ensure high performance, scalability, and maintainability.
-
-* **Frontend Framework:** [Flutter](https://flutter.dev/) (Cross-platform UI toolkit)
-* **Programming Language:** [Dart](https://dart.dev/) (Object-oriented, client-optimized language)
-* **Backend Backend-as-a-Service (BaaS):** [Firebase](https://firebase.google.com/)
-  * **Authentication:** Secure email/password login system.
-  * **Cloud Firestore:** A NoSQL cloud database that syncs data across all clients in real-time.
-* **State Management:** [Provider](https://pub.dev/packages/provider)
-  * The app employs a robust state management architecture utilizing `ChangeNotifierProvider` (`AuthProvider` and `ItemProvider`) to efficiently manage user sessions, loading states, and live data fetching without unnecessary widget rebuilds.
-* **Media & APIs:**
-  * **Image Picker:** For capturing or selecting images from the device gallery.
-  * **ImgBB API:** Instead of cluttering Firebase Storage, images are efficiently uploaded to ImgBB's cloud servers via HTTP POST requests, and the resulting URLs are stored in Firestore for rapid retrieval.
+### 🔍 Lost & Found Feed
+- View all **Lost Items** reported by students/staff
+- View all **Found Items** submitted by finders
+- Each card shows item details, image, date, and location
+- **Call** or **WhatsApp** the person directly from the app
+- **Share** any post with one tap
 
 ---
 
-## 📂 Deep Dive into Project Structure
+### 📢 Report a Lost Item
+- Fill in item name, category, color, description, location
+- Optionally upload a photo (from camera or gallery)
+- Image is uploaded to **ImgBB** for hosting
+- Submitted to Firestore as a `lost_items` document
 
-The codebase strictly follows a modular, feature-first directory structure, making it highly scalable and easy to navigate:
+---
 
-```text
-lib/
-│── main.dart                  # App entry point, Firebase init & Route definitions
-│── models/                    
-│   └── models.dart            # Centralized Data Classes (UserModel, LostItem, FoundItem)
-│── providers/                 
-│   ├── auth_provider.dart     # Handles Firebase Auth, Role assignment, and User State
-│   └── item_provider.dart     # Handles Firestore queries and Real-time Feed State
-│── screens/                   
-│   ├── admin/                 
-│   │   └── admin_dashboard_screen.dart  # Live Statistics UI for Authorities
-│   ├── auth/                  
-│   │   ├── login_screen.dart            # Login UI with password visibility toggle
-│   │   └── register_screen.dart         # Registration UI
-│   ├── dashboard/             
-│   │   ├── home_screen.dart             # Bottom Navigation Bar controller
-│   │   └── notifications_screen.dart    # (Upcoming) Notifications logic
-│   ├── found_items/           
-│   │   ├── feed_screen.dart             # Core Public Feed (Lost & Found Tabs)
-│   │   └── report_found_item_screen.dart# Form logic & ImgBB API integration
-│   ├── lost_items/            
-│   │   └── report_lost_item_screen.dart # Form logic for lost items
-│   ├── profile/               
-│   │   └── profile_screen.dart          # User details, role detection, & My Posts
-│   └── search/                
-│       └── search_screen.dart           # Search functionality
-└── utils/                     
-    └── theme.dart             # Global application theming (Colors, Fonts, Inputs)
+### 📦 Report a Found Item
+- Fill in category, location, public description
+- Set **deposit location** (e.g., Kept with me, HOD Office, Library, Security Desk, Admin Block)
+- Add **Verification Questions** (only the true owner would know the answers) to prevent false claims
+- Optionally upload a photo
+- Submitted to Firestore as a `found_items` document
+
+---
+
+### ✅ Claiming System
+- Any user can **Claim** a found item by answering the verification questions set by the finder
+- Claim is saved to Firestore `claims` collection with status `PENDING`
+- Admin is notified of new claims via the in-app notification system
+- The found item status changes to `CLAIM_PENDING`
+
+---
+
+### 🔔 Notifications
+- In-app notifications stored in Firestore `notifications` collection
+- Notifications are sent when:
+  - A new claim is submitted (admin is notified)
+  - Admin **approves** a claim (both claimant and finder are notified)
+  - Admin **rejects** a claim (claimant is notified)
+- Viewable from the notification bell icon on the home screen
+
+---
+
+### 🛡️ Admin Dashboard
+Only visible to users with admin role.
+
+- **Live Stats**: Total users, lost items, found items, pending claims count
+- **Manage Claims**: View all pending/approved/rejected claims, approve or reject them with one tap
+- **Manage Users**: View all registered users, delete any user if needed
+
+---
+
+### 🗑️ Delete Your Own Post
+- Users can delete their **own** Lost or Found posts
+- Admins can delete **any** post
+- A confirmation dialog prevents accidental deletion
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology | Usage |
+|---|---|
+| **Flutter** | Cross-platform UI framework |
+| **Firebase Authentication** | Login, Register, Forgot Password |
+| **Cloud Firestore** | Real-time database for all data |
+| **Firebase Storage** (via ImgBB) | Image hosting |
+| **Provider** | State management |
+| **Google Fonts** | Typography |
+| **Image Picker** | Camera & gallery access |
+| **URL Launcher** | Call & WhatsApp integration |
+| **Share Plus** | Sharing posts |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Flutter SDK (3.x+)
+- Firebase project with Authentication & Firestore enabled
+- `google-services.json` placed in `android/app/`
+- `GoogleService-Info.plist` placed in `ios/Runner/`
+
+### Installation
+
+```bash
+git clone https://github.com/jinalmore019/university_Lost-Found.git
+cd university_Lost-Found
+flutter pub get
+flutter run
 ```
 
 ---
 
-## 🚀 Setup & Installation Instructions
+## 📁 Project Structure
 
-Follow these steps to deploy the application on your local machine:
-
-### Prerequisites
-* [Flutter SDK](https://docs.flutter.dev/get-started/install) installed and added to PATH.
-* [Dart SDK](https://dart.dev/get-dart) installed.
-* An IDE (Android Studio, VS Code, or IntelliJ).
-* A physical device or Emulator for testing.
-
-### Running the Project
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/jinalmore019/university_Lost-Found.git
-   ```
-2. **Navigate to the project directory:**
-   ```bash
-   cd university_Lost-Found
-   ```
-3. **Fetch all dependencies:**
-   ```bash
-   flutter pub get
-   ```
-4. **Compile and Run:**
-   ```bash
-   flutter run
-   ```
-
----
-
-## 🔮 Future Enhancements (Roadmap)
-While the core functionality is robust and complete, the architecture is designed to support future expansions:
-- **Push Notifications:** Integrating Firebase Cloud Messaging (FCM) to alert users when an item matching their lost report is found.
-- **In-App Chat System:** A dedicated messaging interface to communicate without relying on third-party apps like WhatsApp.
-- **Advanced Admin Controls:** Allowing admins to physically mark items as "Claimed" and archive old posts to keep the database clean.
+```
+lib/
+├── main.dart                    # App entry point, routing & providers
+├── models/
+│   └── models.dart              # UserModel, LostItem, FoundItem, Claim, VerificationQuestion
+├── providers/
+│   ├── auth_provider.dart       # Login, Register, Forgot Password, Logout
+│   └── item_provider.dart       # Fetch, Add, Delete Lost & Found items
+├── screens/
+│   ├── auth/
+│   │   ├── login_screen.dart
+│   │   └── register_screen.dart
+│   ├── dashboard/
+│   │   ├── home_screen.dart
+│   │   └── notifications_screen.dart
+│   ├── found_items/
+│   │   ├── feed_screen.dart
+│   │   ├── report_found_item_screen.dart
+│   │   └── claim_item_screen.dart
+│   ├── lost_items/
+│   │   └── report_lost_item_screen.dart
+│   └── admin/
+│       ├── admin_dashboard_screen.dart
+│       ├── manage_claims_screen.dart
+│       └── manage_users_screen.dart
+└── utils/
+    └── theme.dart               # App-wide theme configuration
+```
 
 ---
 
-## 📝 License & Disclaimer
-This project is open-source and specifically tailored for educational institutions. The codebase serves as a prime example of integrating Flutter with Firebase to solve real-world campus problems.
+## 🔥 Firestore Collections
+
+| Collection | Description |
+|---|---|
+| `users` | Registered user profiles |
+| `lost_items` | Lost item reports |
+| `found_items` | Found item reports with verification questions |
+| `claims` | Claims submitted by users for found items |
+| `notifications` | In-app notifications for users and admins |
+
+---
+
+## 👨‍💻 Developer
+
+**Jinal More**  
+[github.com/jinalmore019](https://github.com/jinalmore019)

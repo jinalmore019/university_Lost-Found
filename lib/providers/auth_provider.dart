@@ -104,11 +104,22 @@ class AuthProvider extends ChangeNotifier {
     return "Registration failed. Please try again.";
   }
 
-  Future<void> resetPassword(String email) async {
+  Future<String?> resetPassword(String email) async {
+    _isLoading = true;
+    notifyListeners();
     try {
       await _auth.sendPasswordResetEmail(email: email);
+      _isLoading = false;
+      notifyListeners();
+      return null;
+    } on FirebaseAuthException catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      return e.message;
     } catch (e) {
-      print(e);
+      _isLoading = false;
+      notifyListeners();
+      return e.toString();
     }
   }
 

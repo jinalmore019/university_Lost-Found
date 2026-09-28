@@ -64,4 +64,23 @@ class ItemProvider extends ChangeNotifier {
       print(e);
     }
   }
+
+  Future<void> deleteFoundItem(String itemId) async {
+    try {
+      await _firestore.collection('found_items').doc(itemId).delete();
+      await fetchFoundItems();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> deleteLostItem(String itemId) async {
+    try {
+      await _firestore.collection('lost_items').doc(itemId).delete();
+      await fetchLostItems();
+    } catch (e) {
+      print(e);
+    }
+  }
 }
+

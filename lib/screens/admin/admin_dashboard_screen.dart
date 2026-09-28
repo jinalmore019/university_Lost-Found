@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'manage_claims_screen.dart';
+import 'manage_users_screen.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -77,8 +79,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     ),
                     onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Claims Management is coming soon!')),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const ManageClaimsScreen()),
                       );
                     },
                     icon: const Icon(Icons.gavel),
@@ -92,8 +95,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     ),
                     onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('User Management is coming soon!')),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const ManageUsersScreen()),
                       );
                     },
                     icon: const Icon(Icons.people),

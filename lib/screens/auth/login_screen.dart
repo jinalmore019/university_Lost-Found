@@ -95,12 +95,20 @@ class _LoginScreenState extends State<LoginScreen> {
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
-                        onPressed: () {
+                        onPressed: () async {
                           if (_emailController.text.isNotEmpty) {
-                            Provider.of<AuthProvider>(context, listen: false).resetPassword(_emailController.text);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Password reset email sent (if account exists).')),
-                            );
+                            String? error = await Provider.of<AuthProvider>(context, listen: false).resetPassword(_emailController.text);
+                            if (mounted) {
+                              if (error == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Password reset email sent! Please check your inbox.')),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(error)),
+                                );
+                              }
+                            }
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Please enter your email first.')),
